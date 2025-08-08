@@ -1,15 +1,24 @@
 services:
-  PyPlastimatch:
+  Plastimatch:
     build:
       context: ../
       dockerfile: docker_src/Dockerfile
-    image: pyplastimatch:latest
-    container_name: PyPlastimatch
+      ssh:
+        - default
+    image: Plastimatch:latest
+    container_name: Plastimatch
+    user: "${UID}:${GID}"
+    working_dir: /app
     stdin_open: true # docker run -i
     tty: true # docker run -t
     environment:
       - HOST_HOME=${HOST_HOME}
-      - DEBIAN_FRONTEND=noninteractive
+      - DISPLAY=${DISPLAY}
     volumes:
-      - ../:/root/Software/pyplastimatch
-      - ${HOST_HOME}:/root/YourLocalHome
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      # - ../elastix-api.py:/app/Software/SimpleElastix-brachyutils/elastix-api.py
+      # - ../run_api.sh:/app/Software/SimpleElastix-brachyutils/run_api.sh
+      - ${HOST_HOME}:/home/ubuntu/YourLocalHome
+      - ../temp_data:/app/Software/plastimatch-brachyutils/temp_data
+    entrypoint: ["/bin/bash"]
+    command: ["/app/Software/plastimatch-brachyutils/run_api.sh"]
