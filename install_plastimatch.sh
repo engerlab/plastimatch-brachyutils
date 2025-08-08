@@ -7,18 +7,18 @@
 dir_software=/app/Software
 num_threads=16
 
-# apt install -y build-essential
+apt install -y plastimatch
 
-cd ${dir_software}
-git clone --recurse-submodules https://github.com/engerlab/SimpleElastix-brachyutils.git
+# apt install -y install g++ make git cmake-curses-gui \
+#   libblas-dev liblapack-dev libsqlite3-dev \
+#   libdcmtk-dev libdlib-dev libfftw3-dev \
+#   libinsighttoolkit5-dev \
+#   libpng-dev libtiff-dev uuid-dev zlib1g-dev
 
-cd ${dir_software}/SimpleElastix-brachyutils/SimpleITK || exit
-mkdir build
-cd build || exit
+# cd ${dir_software}
+# git clone --recurse-submodules https://github.com/engerlab/plastimatch-brachyutils.git
 
-cmake ../SuperBuild -DSimpleITK_USE_ELASTIX=ON
-    # -DSIMPLEITK_USE_PYTHON=ON \
-    # -DSIMPLEITK_USE_PYTHON_WRAPPING=ON
+# cd ${dir_software}/plastimatch-brachyutils/plastimatch || exit
+# mkdir build
+# cd build || exit
 
-make -j ${num_threads}
-python3.13 -m pip install SimpleITK-build/Wrapping/Python

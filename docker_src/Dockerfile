@@ -15,12 +15,19 @@ RUN --mount=type=ssh bash ${dir_software}/install_cmake.sh
 COPY docker_src/repositories/install_python.sh ${dir_software}/install_python.sh
 RUN --mount=type=ssh bash ${dir_software}/install_python.sh
 
+COPY py_requirements.txt ${dir_software}/py_requirements.txt
 RUN python3.13 -m pip install -r ${dir_software}/py_requirements.txt
+
+COPY install_plastimatch.sh ${dir_software}/install_plastimatch.sh
+RUN --mount=type=ssh bash ${dir_software}/install_plastimatch.sh
+
+RUN mkdir -p ${dir_software}/plastimatch-brachyutils
+COPY plastimatch-api.py ${dir_software}/plastimatch-brachyutils/plastimatch-api.py
+COPY run_api.sh ${dir_software}/plastimatch-brachyutils/run_api.sh
 
 # COPY install_simpleElastix.sh ${dir_software}/install_simpleElastix.sh
 # RUN --mount=type=ssh bash ${dir_software}/install_simpleElastix.sh
 # 
-# COPY py_requirements.txt ${dir_software}/py_requirements.txt
 
 # for development. delete later
 # COPY run_api.sh ${dir_software}/SimpleElastix-brachyutils/run_api.sh

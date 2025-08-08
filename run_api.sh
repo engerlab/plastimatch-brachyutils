@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # for production
-fastapi run /app/Software/SimpleElastix-brachyutils/elastix-api.py > /home/ubuntu/elastix.log
+fastapi run /app/Software/plastimatch-brachyutils/plastimatch-api.py > /home/ubuntu/plastimatch.log
