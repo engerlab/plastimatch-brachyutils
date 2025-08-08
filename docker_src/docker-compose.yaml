@@ -16,9 +16,11 @@ services:
       - DISPLAY=${DISPLAY}
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../plastimatch-api.py:/app/Software/SimpleElastix-brachyutils/plastimatch-api.py
-      # - ../run_api.sh:/app/Software/SimpleElastix-brachyutils/run_api.sh
       - ${HOST_HOME}:/home/ubuntu/YourLocalHome
       - ../temp_data:/app/Software/plastimatch-brachyutils/temp_data
+      - ../plastimatch-api.py:/app/Software/plastimatch-brachyutils/plastimatch-api.py
+      # to be deleted:
+      - ../pyplsti_api.py:/app/Software/plastimatch-brachyutils/pyplsti_api.py
+      # - ../run_api.sh:/app/Software/plastimatch-brachyutils/run_api.sh
     # entrypoint: ["/bin/bash"]
     # command: ["/app/Software/plastimatch-brachyutils/run_api.sh"]
