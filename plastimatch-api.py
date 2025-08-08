@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from fastapi import FastAPI
 from pathlib import Path
 from typing import List, ClassVar, Dict
+from collections import defaultdict
 
 import subprocess
 
@@ -40,14 +41,14 @@ class Register_Inputs(BaseModel):
 
 @app.post("/plastimatch_register")
 def register_api(
-    all_registration_inputs: Inputs_register
+    all_registration_inputs: Register_Inputs
     ) -> None:
     r"""
     ### Purpose:
         - To run image registration using plastimatch.
 
     ### Inputs:
-        - all_registration_inputs: an instance of Inputs_register containing the input parameters for the registration.
+        - all_registration_inputs: an instance of Register_Inputs containing the input parameters for the registration.
     """
     print(f"static image: {all_registration_inputs.global_params['fixed']}")
     print(f"moving image: {all_registration_inputs.global_params['moving']}")
@@ -121,16 +122,16 @@ def register(
     final_global_params = defaultdict(str)
     # loop through the global parameters and create the command
     for key in global_params:
-    if key in global_param_possible_key_list:
-        final_global_params[key] = global_params[key]
+      if key in global_param_possible_key_list:
+          final_global_params[key] = global_params[key]
     
     # make sure the required global parameters are present
     if "fixed" not in final_global_params:
-    raise ValueError("The fixed image is required.")
+      raise ValueError("The fixed image is required.")
     if "moving" not in final_global_params:
-    raise ValueError("The moving image is required.")
+      raise ValueError("The moving image is required.")
     if "image_out" not in final_global_params:
-    raise ValueError("The output image is required.")
+      raise ValueError("The output image is required.")
     
     # here are the possible stage parameters for the registration
     # some are optional, some are mandatory, we loop through them
@@ -156,10 +157,10 @@ def register(
     # loop through the stage parameters and create the command for each stage
     final_stage_params_list = []
     for stage_params in stage_params_list:
-    final_stage_params = defaultdict(str)
+      final_stage_params = defaultdict(str)
     for key in stage_params:
         if key in stage_param_possible_key_list:
-        final_stage_params[key] = stage_params[key]
+          final_stage_params[key] = stage_params[key]
     final_stage_params_list.append(final_stage_params) 
     
     # create the parm.txt file in the same directory as image_out
@@ -169,22 +170,22 @@ def register(
     parm_txt_path = out_dir.joinpath("parm.txt")
     param_txt = "[Global]\n"
     for key in final_global_params:
-    param_txt += f"{key}={final_global_params[key]}\n"
+      param_txt += f"{key}={final_global_params[key]}\n"
     param_txt += "\n"
     for stage in final_stage_params_list:
-    param_txt += "[Stage]\n"
+      param_txt += "[Stage]\n"
     for key in stage:
         param_txt += f"{key}={stage[key]}\n"
     param_txt += "\n"
     
     with open(parm_txt_path, "w") as f:
-    f.write(param_txt)
+      f.write(param_txt)
     
     command = ["plastimatch", "register", str(parm_txt_path)]
     try:
-    registration_summary = subprocess.run(command, capture_output = True, check = True)
+      registration_summary = subprocess.run(command, capture_output = True, check = True)
     except Exception as e:
-    print(e)
+      print(e)
 
 class Inputs_convert(BaseModel):
     r"""
@@ -266,7 +267,7 @@ def test_register_api():
             "xform": "bspline"
         }
     ]
-    inputs = Inputs_register(global_params=global_params, stage_params_list=stage_params_list)
+    inputs = Register_Inputs(global_params=global_params, stage_params_list=stage_params_list)
     register_api(inputs)
 
 def test_convert_api():
