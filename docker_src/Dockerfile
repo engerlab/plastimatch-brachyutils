@@ -1,6 +1,5 @@
 FROM ubuntu:24.04
 
-FROM simple-elastix:latest
 ARG dir_software="/app/Software"
 WORKDIR ${dir_software}
 USER root
@@ -15,16 +14,17 @@ RUN --mount=type=ssh bash ${dir_software}/install_cmake.sh
  
 COPY docker_src/repositories/install_python.sh ${dir_software}/install_python.sh
 RUN --mount=type=ssh bash ${dir_software}/install_python.sh
- 
+
+RUN python3.13 -m pip install -r ${dir_software}/py_requirements.txt
+
 # COPY install_simpleElastix.sh ${dir_software}/install_simpleElastix.sh
 # RUN --mount=type=ssh bash ${dir_software}/install_simpleElastix.sh
 # 
 # COPY py_requirements.txt ${dir_software}/py_requirements.txt
-# RUN python3.13 -m pip install -r ${dir_software}/py_requirements.txt
 
 # for development. delete later
 # COPY run_api.sh ${dir_software}/SimpleElastix-brachyutils/run_api.sh
-COPY elastix-api.py ${dir_software}/SimpleElastix-brachyutils/elastix-api.py
+# COPY elastix-api.py ${dir_software}/SimpleElastix-brachyutils/elastix-api.py
 
 # RUN apt-get update && apt-get install -y \
     # build-essential cmake git \
