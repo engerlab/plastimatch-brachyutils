@@ -18,6 +18,6 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ${HOST_HOME}:/home/ubuntu/YourLocalHome
       - ../temp_data:/app/Software/plastimatch-brachyutils/temp_data
-      # - ../plastimatch-api.py:/app/Software/plastimatch-brachyutils/plastimatch-api.py
-    entrypoint: ["/bin/bash"]
-    command: ["/app/Software/plastimatch-brachyutils/run_api.sh"]
+      - ../plastimatch-api.py:/app/Software/plastimatch-brachyutils/plastimatch-api.py
+    # entrypoint: ["/bin/bash"]
+    # command: ["/app/Software/plastimatch-brachyutils/run_api.sh"]

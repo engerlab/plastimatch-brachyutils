@@ -250,8 +250,8 @@ def convert(
         print(f"Error occurred while running plastimatch convert: {e}")
 
 def test_register_api():
-    pth_static = "../temp_data/static.nrrd"
-    pth_moving = "../temp_data/moving.nrrd"
+    pth_static = "../temp_data/us_case000000.nrrd"
+    pth_moving = "../temp_data/mr_case000000.nrrd"
     pth_output = "../temp_data/registered.nrrd"
     vf_out = "../temp_data/vf.nrrd"
 
@@ -278,5 +278,5 @@ def test_convert_api():
     convert_api(inputs)
 
 if __name__ == "__main__":
-    # test_register_api()
-    test_convert_api()
+    test_register_api()
+    # test_convert_api()
