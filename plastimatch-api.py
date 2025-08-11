@@ -199,16 +199,20 @@ class Inputs_convert(BaseModel):
     pth_output: Path | str = None
     # these attributes will be filled from the options
     xf: Path | str = None
+    interpolation : str = None
 
     def __init__(self, **data):
-        dir_temp_data = Path(__file__).parent.joinpath("temp_data")
-        for key, value in data.items():
-            if isinstance(value, str):
-                if "temp_data/registration/" in value:
-                    value = value.split("temp_data/registration/")[-1]
-                value = dir_temp_data.joinpath(value)
-            data[key] = value
         super().__init__(**data)
+        dir_temp_data = Path(__file__).parent.joinpath("temp_data")
+        # Process all path attributes
+        for attr_name in ['pth_input', 'pth_output', 'xf']:
+            attr_value = getattr(self, attr_name)
+            if attr_value is not None:
+                # Remove temp_data/registration/ prefix if present
+                if "temp_data/registration/" in str(attr_value):
+                    attr_value = str(attr_value).split("temp_data/registration/")[-1]
+                # Set the attribute to the full path
+                setattr(self, attr_name, dir_temp_data.joinpath(attr_value))
 
 @app.post("/plastimatch_convert")
 def convert_api(
@@ -223,13 +227,15 @@ def convert_api(
     convert(
         pth_input=all_convert_inputs.pth_input,
         pth_output=all_convert_inputs.pth_output,
-        xf=all_convert_inputs.xf
+        xf=all_convert_inputs.xf,
+        interpolation=all_convert_inputs.interpolation
     )
 
 def convert(
     pth_input: Path | str,
     pth_output: Path | str,
-    xf: Path | str = None
+    xf: Path | str = None,
+    interpolation: str = "linear"
     ) -> None:
     """
     ### Purpose:
@@ -238,6 +244,7 @@ def convert(
         - pth_input: Path | str := the path to the input image.
         - pth_output: Path | str := the path to the output image.
         - xf: Path | str := the path to the transformation file.
+        - interpolation: str := the interpolation method to use. could be "linear" or "nn".
     """
     # Call the plastimatch convert command
     # command = ["plastimatch", "convert", str(pth_input), str(pth_output)]
@@ -245,8 +252,9 @@ def convert(
     command += [f"--input={str(pth_input)}"]
     if xf:
         command += [f"--xf={str(xf)}"]
+    if interpolation:
+        command += [f"--interpolation={interpolation}"]
     command += [f"--output-img={str(pth_output)}"]
-
     try:
         subprocess.run(command, capture_output = True, check = True)
     except subprocess.CalledProcessError as e:
@@ -274,10 +282,16 @@ def test_register_api():
     register_api(inputs)
 
 def test_convert_api():
-    pth_input = "mr_case000000.nrrd"
-    pth_output = "warped.nrrd"
+    pth_input = "Biopsy_0.nrrd"
+    pth_output = "Biopsy_warped.nrrd"
     xf = "vf.nrrd"
-    inputs = Inputs_convert(pth_input=pth_input, pth_output=pth_output, xf=xf)
+    interpolation = "linear"
+    inputs = Inputs_convert(
+        pth_input=pth_input,
+        pth_output=pth_output,
+        xf=xf,
+        interpolation=interpolation
+    )
     convert_api(inputs)
 
 if __name__ == "__main__":
