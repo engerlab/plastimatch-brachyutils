@@ -220,10 +220,9 @@ def convert_api(
     ### Inputs:
         - all_convert_inputs: an instance of Inputs_convert containing the input parameters for the convert command.    
     """
-    from plastimatch import convert
     convert(
-        input=all_convert_inputs.pth_input,
-        output_img=all_convert_inputs.pth_output,
+        pth_input=all_convert_inputs.pth_input,
+        pth_output=all_convert_inputs.pth_output,
         xf=all_convert_inputs.xf
     )
 
@@ -241,19 +240,23 @@ def convert(
         - xf: Path | str := the path to the transformation file.
     """
     # Call the plastimatch convert command
-    command = ["plastimatch", "convert", str(pth_input), str(pth_output)]
+    # command = ["plastimatch", "convert", str(pth_input), str(pth_output)]
+    command = ["plastimatch", "convert"]
+    command += [f"--input={str(pth_input)}"]
     if xf:
-        command += ["--xf", str(xf)]
+        command += [f"--xf={str(xf)}"]
+    command += [f"--output-img={str(pth_output)}"]
+
     try:
-        subprocess.run(command, check=True)
+        subprocess.run(command, capture_output = True, check = True)
     except subprocess.CalledProcessError as e:
         print(f"Error occurred while running plastimatch convert: {e}")
 
 def test_register_api():
-    pth_static = "../temp_data/us_case000000.nrrd"
-    pth_moving = "../temp_data/mr_case000000.nrrd"
-    pth_output = "../temp_data/registered.nrrd"
-    vf_out = "../temp_data/vf.nrrd"
+    pth_static = "us_case000000.nrrd"
+    pth_moving = "mr_case000000.nrrd"
+    pth_output = "registered.nrrd"
+    vf_out = "vf.nrrd"
 
     global_params = {
         "fixed" : f"{pth_static}",
@@ -271,12 +274,12 @@ def test_register_api():
     register_api(inputs)
 
 def test_convert_api():
-    pth_input = "../temp_data/moving.nrrd"
-    pth_output = "../temp_data/warped.nrrd"
-    xf = "../temp_data/vf.nrrd"
+    pth_input = "mr_case000000.nrrd"
+    pth_output = "warped.nrrd"
+    xf = "vf.nrrd"
     inputs = Inputs_convert(pth_input=pth_input, pth_output=pth_output, xf=xf)
     convert_api(inputs)
 
 if __name__ == "__main__":
-    test_register_api()
-    # test_convert_api()
+    # test_register_api()
+    test_convert_api()
